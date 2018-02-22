@@ -2,21 +2,36 @@ class BinaryMinHeap
   attr_reader :store, :prc
 
   def initialize(&prc)
-    self.store = []
-    self.prc = prc || Proc.new { |el1, el2| el1 <=> el2 }
+    @store = []
+    prc = prc || Proc.new { |el1, el2| el1 <=> el2 }
   end
 
   def count
-    store.length
+    @store.length
   end
 
   def extract
+    raise "no element to extract" if count == 0
+    val = @store[0]
+
+    if count > 1
+      @store[0] = @store.pop
+      self.class.heapify_down(@store, 0, self.count, &prc)
+    else
+      store.pop
+    end
+
+    val
   end
 
   def peek
+    raise "no element to peek" if count == 0
+    @store[0]
   end
 
   def push(val)
+    @store << val
+    self.class.heapify_up(@store, self.count - 1, self.count, &prc)
   end
 
   public
